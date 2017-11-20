@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>cz.vookimedlo.alfred.airbank.fx</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>24CF7577-328D-45FF-BAD9-1939221B09CE</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>98009F79-6FEC-4BC3-A502-989EA9EC44A8</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>98009F79-6FEC-4BC3-A502-989EA9EC44A8</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A9C198C9-6EE5-4A12-8266-6CAF9C974459</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>F37C154F-1F50-463D-8C20-08DF835E1C38</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>A9C198C9-6EE5-4A12-8266-6CAF9C974459</key>
+		<array/>
+		<key>ABCD4152-55A7-403E-9FBE-33DD8C71F3DC</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>24CF7577-328D-45FF-BAD9-1939221B09CE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Michal Duda</string>
+	<key>description</key>
+	<string>Currency rates of Airbank [Czech Republic]</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>AirbankCurrencyRates</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/usr/bin/python
+
+import re
+import sys
+
+query="{query}"
+
+# Check if the input is a float
+#
+if None == re.match('^[1-9]\d*$|^0[,.]\d+$|^[1-9]\d*[,.]\d+$', query):
+    query=""
+
+sys.stdout.write(query)</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>98009F79-6FEC-4BC3-A502-989EA9EC44A8</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>keyword</key>
+				<string>air</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading current currency rates from Airbank [Czech Republic]</string>
+				<key>script</key>
+				<string>#!/usr/bin/python
+
+import json
+import os
+import requests
+import sys
+
+query = "{query}"
+url = 'https://api.airbank.cz/openapi/public/v1/fxrates'
+headers = {'apikey': os.getenv('apikey') }
+
+response = requests.get(url, headers=headers)
+data = json.loads(response.text)
+
+# In czech we use a decimal comma instead of decimal point, so just convert comma to point
+#
+query = query.replace(",", ".")
+
+alfreditems = {"items": []}
+
+for item in data['data']:
+
+    # Process user input
+    #
+    if query and float(query) &gt; 0:
+        # Normalize currency if lot is not equal to 1
+        #
+        if int(item['lot']) != 1:
+            item['nonCash']['sell'] = item['nonCash']['sell'] / item['lot']
+            item['nonCash']['buy'] = item['nonCash']['buy'] / item['lot']
+            item['lot'] = 1
+        # Re-calculate rates for request amount of money
+        #
+        title = str(item['lot'] * float(query)) + " " + item['currencyCode'] + ' = ' + str(item['nonCash']['sell'] * float(query)) + " CZK"
+        subtitle = str(item['nonCash']['buy'] / item['nonCash']['buy'] * float(query)) + " CZK" + ' = ' + str(item['lot'] / item['nonCash']['buy'] * float(query)) + " " + item['currencyCode']
+    else:
+        # Just show what bank provides with the default lots
+        #
+        title = str(item['lot']) + " " + item['currencyCode'] + ' = ' + str(item['nonCash']['sell']) + " CZK"
+        subtitle = str(item['nonCash']['buy']) + " CZK" + ' = ' + str(item['lot']) + " " + item['currencyCode']
+
+    # Fake sorting, so the EUR and USD will be on the top of the currency rates list
+    #
+    mysortkey = item['currencyCode']
+    if 'EUR' == item['currencyCode']:
+        mysortkey = 'A'
+    elif 'USD' == item['currencyCode']:
+        mysortkey = 'AA'
+
+    # Alfred menu items
+    # Question is if we want the enabled 'uid', so Alfred re-sort all items according the their usage
+    #
+    alfreditems['items'].append({
+        "mysortkey": mysortkey,
+        #"uid": item['currencyCode'],
+        "title": title,
+        "subtitle": subtitle,
+        "autocomplete": item['currencyCode'],
+        "icon": {
+            "path": "icon.png"
+        }
+    })
+
+# Sort currencies
+#
+lines = sorted(alfreditems['items'], key=lambda k: k['mysortkey'], reverse=False)
+dump = json.dumps({'items': lines}, indent=4)
+
+sys.stdout.write(dump)
+</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>current exchange rates</string>
+				<key>title</key>
+				<string>Airbank Currency Rates</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>A9C198C9-6EE5-4A12-8266-6CAF9C974459</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>8</integer>
+				<key>hotmod</key>
+				<integer>1310720</integer>
+				<key>hotstring</key>
+				<string>C</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>ABCD4152-55A7-403E-9FBE-33DD8C71F3DC</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.transform</string>
+			<key>uid</key>
+			<string>24CF7577-328D-45FF-BAD9-1939221B09CE</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>readonly latestTag=`curl -s https://api.github.com/repos/vookimedlo/alfred-airbank-currency-rates/releases/latest | grep browser_download_url | grep AirbankCurrencyRates.alfredworkflow | cut -d '/' -f 8`
+
+# THESE VARIABLES MUST BE SET. SEE THE ONEUPDATER README FOR AN EXPLANATION OF EACH.
+readonly remote_info_plist="https://raw.githubusercontent.com/vookimedlo/alfred-airbank-currency-rates/${latestTag}/src/info.plist"
+readonly workflow_url=`curl -s https://api.github.com/repos/vookimedlo/alfred-airbank-currency-rates/releases/latest | grep browser_download_url | grep AirbankCurrencyRates.alfredworkflow | cut -d '"' -f 4`
+readonly download_type='direct'
+readonly frequency_check='4'
+
+# FROM HERE ON, CODE SHOULD BE LEFT UNTOUCHED!
+function abort {
+  echo "${1}" &gt;&amp;2
+  exit 1
+}
+
+function url_exists {
+  curl --silent --location --output /dev/null --fail --range 0-0 "${1}"
+}
+
+function notification {
+  readonly local notificator="$(find . -type d -name 'Notificator.app')"
+  if [[ -n "${notificator}" ]]; then
+    "${notificator}/Contents/Resources/Scripts/notificator" --message "${1}" --title "${alfred_workflow_name}" --subtitle 'A new version is available'
+    return
+  fi
+
+  readonly local terminal_notifier="$(find . -type f -name 'terminal-notifier')"
+  if [[ -n "${terminal_notifier}" ]]; then
+    "${terminal_notifier}" -title "${alfred_workflow_name}" -subtitle 'A new version is available' -message "${1}"
+    return
+  fi
+
+  osascript -e "display notification \"${1}\" with title \"${alfred_workflow_name}\" subtitle \"A new version is available\""
+}
+
+# Local sanity checks
+readonly local_info_plist='info.plist'
+readonly local_version="$(/usr/libexec/PlistBuddy -c 'print version' "${local_info_plist}")"
+
+[[ -n "${local_version}" ]] || abort 'You need to set a workflow version in the configuration sheet.'
+[[ "${download_type}" =~ ^(direct|page|github_release)$ ]] || abort "'download_type' (${download_type}) needs to be one of 'direct', 'page', or 'github_release'."
+[[ "${frequency_check}" =~ ^[0-9]+$ ]] || abort "'frequency_check' (${frequency_check}) needs to be a number."
+
+# Check for updates
+if [[ $(find "${local_info_plist}" -mtime +"${frequency_check}"d) ]]; then
+  if ! url_exists "${remote_info_plist}"; then abort "'remote_info_plist' (${remote_info_plist}) appears to not be reachable."; fi # Remote sanity check
+
+  readonly tmp_file="$(mktemp)"
+  curl --silent --location --output "${tmp_file}" "${remote_info_plist}"
+  readonly remote_version="$(/usr/libexec/PlistBuddy -c 'print version' "${tmp_file}")"
+
+  if [[ "${local_version}" == "${remote_version}" ]]; then
+    touch "${local_info_plist}" # Reset timer by touching local file
+    exit 0
+  fi
+
+  if [[ "${download_type}" == 'page' ]]; then
+    notification 'Opening download page…'
+    open "${workflow_url}"
+    exit 0
+  fi
+
+  download_url="$([[ "${download_type}" == 'github_release' ]] &amp;&amp; curl --silent "https://api.github.com/repos/${workflow_url}/releases/latest" | grep 'browser_download_url' | head -1 | sed -E 's/.*browser_download_url": "(.*)"/\1/' || echo "${workflow_url}")"
+
+  if url_exists "${download_url}"; then
+    notification 'Downloading and installing…'
+    curl --silent --location --output "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow" "${download_url}"
+    open "${HOME}/Downloads/${alfred_workflow_name}.alfredworkflow"
+  else
+    abort "'workflow_url' (${download_url}) appears to not be reachable."
+  fi
+fi</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>F37C154F-1F50-463D-8C20-08DF835E1C38</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>https://openclipart.org/detail/244303/pot-of-gold</string>
+	<key>uidata</key>
+	<dict>
+		<key>24CF7577-328D-45FF-BAD9-1939221B09CE</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>5</integer>
+			<key>note</key>
+			<string>Airbank</string>
+			<key>xpos</key>
+			<integer>220</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>98009F79-6FEC-4BC3-A502-989EA9EC44A8</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>5</integer>
+			<key>note</key>
+			<string>Airbank</string>
+			<key>xpos</key>
+			<integer>350</integer>
+			<key>ypos</key>
+			<integer>20</integer>
+		</dict>
+		<key>A9C198C9-6EE5-4A12-8266-6CAF9C974459</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>5</integer>
+			<key>note</key>
+			<string>Airbank</string>
+			<key>xpos</key>
+			<integer>580</integer>
+			<key>ypos</key>
+			<integer>20</integer>
+		</dict>
+		<key>ABCD4152-55A7-403E-9FBE-33DD8C71F3DC</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>5</integer>
+			<key>note</key>
+			<string>Airbank</string>
+			<key>xpos</key>
+			<integer>30</integer>
+			<key>ypos</key>
+			<integer>20</integer>
+		</dict>
+		<key>F37C154F-1F50-463D-8C20-08DF835E1C38</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>note</key>
+			<string>OneUpdater</string>
+			<key>xpos</key>
+			<integer>580</integer>
+			<key>ypos</key>
+			<integer>230</integer>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<dict>
+		<key>apikey</key>
+		<string></string>
+	</dict>
+	<key>variablesdontexport</key>
+	<array>
+		<string>apikey</string>
+	</array>
+	<key>version</key>
+	<string>2017_11_XX</string>
+	<key>webaddress</key>
+	<string>https://github.com/vookimedlo/alfred-airbank-currency-rates</string>
+</dict>
+</plist>
