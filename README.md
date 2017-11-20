@@ -1,5 +1,5 @@
 # alfred-airbank-currency-rates
-[Alfred 3][1] workflow for showing actual currency exchange rates of Airbank [Czech Republic].
+[Alfred 3][1] workflow for showing actual AirBank [Czech Republic] currency exchange rates.
 
 ## Installation
 
