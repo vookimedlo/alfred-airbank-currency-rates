@@ -360,7 +360,7 @@ fi</string>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>https://openclipart.org/detail/244303/pot-of-gold</string>
+	<string>See https://github.com/vookimedlo/alfred-airbank-currency-rates</string>
 	<key>uidata</key>
 	<dict>
 		<key>24CF7577-328D-45FF-BAD9-1939221B09CE</key>
@@ -429,7 +429,7 @@ fi</string>
 		<string>apikey</string>
 	</array>
 	<key>version</key>
-	<string>2017_11_XX</string>
+	<string>2017.11.20</string>
 	<key>webaddress</key>
 	<string>https://github.com/vookimedlo/alfred-airbank-currency-rates</string>
 </dict>
