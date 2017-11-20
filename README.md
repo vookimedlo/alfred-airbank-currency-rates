@@ -20,7 +20,23 @@
 
 ## Usage
 
+In Alfred, type `air` and actual exchange rates will be downloaded from AirBank and shown in Alfred. The most useful, EUR and USD, will be displayed on the top of exchange rates list, the remaining will be ordered by currency abbreviation. 
 
+![Alfred - workflow main](doc/images/alfred-airbank-main.png?raw=true "")
+
+------------------
+
+Additionally, the cash amount could be added. Then, the exchange results will be updated.
+
+![Alfred - workflow main with amount](doc/images/alfred-airbank-main-amount.png?raw=true "")
+
+------------------
+
+This workflow could be also invoked by pressing global shortcut <key>⌃⌘c</key>. When you have a number in a selection, this one will be used as the cash amount passed to the workflow. Very useful in combination with a web browser. 
+
+![Alfred - workflow main with selected text in external program](doc/images/alfred-amazon-airbank-selected-amount.png?raw=true "")
+
+------------------
 
 [1]: https://www.alfredapp.com/
 [2]: https://github.com/vookimedlo/alfred-airbank-currency-rates/releases/latest
