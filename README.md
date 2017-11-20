@@ -10,8 +10,7 @@
    ![Developer portal - new version](doc/images/developerNewVersion.png?raw=true "")
       
 3) Install [alfred-airbank-currency-rates wokflow.][2]
-   - Copy your API Key from the developer portal version details to clipboard. 
-   
+   - Copy your API Key from the developer portal version details to clipboard.    
    ![Developer portal - new version](doc/images/developerVersionDetail.png?raw=true "")
    
    - Paste your API Key to the workflow properties.
