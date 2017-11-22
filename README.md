@@ -7,6 +7,7 @@
 2) Create your own public API key
    - Tap on the `+ Create new application` button and fill in the application name and a description. You could use any values here.
    - Then, tap on the `+ Create new application version` button and fill it according following image. Eventually, press the `Create` button.
+   
    ![Developer portal - New Version](doc/images/developerNewVersion.png?raw=true "")
       
 3) Install [alfred-airbank-currency-rates wokflow.][2]
