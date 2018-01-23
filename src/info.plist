@@ -73,35 +73,31 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>#!/usr/bin/python
-
-import re
-import sys
-
-query="{query}"
-
-# Check if the input is a float
-#
-if None == re.match('^[1-9]\d*$|^0[,.]\d+$|^[1-9]\d*[,.]\d+$', query):
-    query=""
-
-sys.stdout.write(query)</string>
-				<key>scriptargtype</key>
+				<key>action</key>
 				<integer>0</integer>
-				<key>scriptfile</key>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
 				<string></string>
-				<key>type</key>
-				<integer>3</integer>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>1310720</integer>
+				<key>hotstring</key>
+				<string>A</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.script</string>
+			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>98009F79-6FEC-4BC3-A502-989EA9EC44A8</string>
+			<string>ABCD4152-55A7-403E-9FBE-33DD8C71F3DC</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -159,11 +155,12 @@ for item in data['data']:
         # Normalize currency if lot is not equal to 1
         #
         if int(item['lot']) != 1:
-            item['nonCash']['sell'] = item['nonCash']['sell'] / item['lot']
-            item['nonCash']['buy'] = item['nonCash']['buy'] / item['lot']
+            item['nonCash']['sell'] = item['nonCash']['sell'] / float(item['lot'])
+            item['nonCash']['buy'] = item['nonCash']['buy'] / float(item['lot'])
             item['lot'] = 1
         # Re-calculate rates for request amount of money
         #
+#        print "a: " + str(item['nonCash']['buy']) + item['currencyCode']
         title = str(item['lot'] * float(query)) + " " + item['currencyCode'] + ' = ' + str(item['nonCash']['sell'] * float(query)) + " CZK"
         subtitle = str(item['nonCash']['buy'] / item['nonCash']['buy'] * float(query)) + " CZK" + ' = ' + str(item['lot'] / item['nonCash']['buy'] * float(query)) + " " + item['currencyCode']
     else:
@@ -224,31 +221,35 @@ sys.stdout.write(dump)
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>1</integer>
-				<key>focusedappvariable</key>
+				<key>concurrently</key>
 				<false/>
-				<key>focusedappvariablename</key>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/usr/bin/python
+
+import re
+import sys
+
+query="{query}"
+
+# Check if the input is a float
+#
+if None == re.match('^[1-9]\d*$|^0[,.]\d+$|^[1-9]\d*[,.]\d+$', query):
+    query=""
+
+sys.stdout.write(query)</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
 				<string></string>
-				<key>hotkey</key>
-				<integer>8</integer>
-				<key>hotmod</key>
-				<integer>1310720</integer>
-				<key>hotstring</key>
-				<string>C</string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
+				<key>type</key>
+				<integer>3</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
+			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>ABCD4152-55A7-403E-9FBE-33DD8C71F3DC</string>
+			<string>98009F79-6FEC-4BC3-A502-989EA9EC44A8</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -429,7 +430,7 @@ fi</string>
 		<string>apikey</string>
 	</array>
 	<key>version</key>
-	<string>2017.11.20</string>
+	<string>2018.01.23</string>
 	<key>webaddress</key>
 	<string>https://github.com/vookimedlo/alfred-airbank-currency-rates</string>
 </dict>
