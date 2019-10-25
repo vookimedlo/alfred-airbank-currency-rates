@@ -108,6 +108,8 @@
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -131,15 +133,15 @@
 
 import json
 import os
-import requests
+import urllib2
 import sys
 
 query = "{query}"
 url = 'https://api.airbank.cz/openapi/public/v1/fxrates'
 headers = {'apikey': os.getenv('apikey') }
 
-response = requests.get(url, headers=headers)
-data = json.loads(response.text)
+response = urllib2.urlopen(urllib2.Request(url, headers=headers))
+data = json.loads(response.read())
 
 # In czech we use a decimal comma instead of decimal point, so just convert comma to point
 #
@@ -216,7 +218,7 @@ sys.stdout.write(dump)
 			<key>uid</key>
 			<string>A9C198C9-6EE5-4A12-8266-6CAF9C974459</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -430,7 +432,7 @@ fi</string>
 		<string>apikey</string>
 	</array>
 	<key>version</key>
-	<string>2018.01.23</string>
+	<string>2019.10.25</string>
 	<key>webaddress</key>
 	<string>https://github.com/vookimedlo/alfred-airbank-currency-rates</string>
 </dict>
